@@ -3,7 +3,7 @@
 USERID=$(id -u)
 LOGS_FOLDER="/var/log/shell-roboshop"
 LOGS_FILE="$LOGS_FOLDER/$0.log"
-MONGO_HOST="mongodb.techno90s.online"
+MONGO_HOST=mongodb.techno90s.online
 SCRIPT_DIR="$PWD"
 
 #-------------------- declaring color code variables-------------------------------#
@@ -82,10 +82,10 @@ VALIDATE $? "copy the mongo repo dirctory"
 dnf install mongodb-mongosh -y &>>$LOGS_FILE
 VALIDATE $? "install mongodb client"
 
-INDEX=$(mongosh --host $MONGODB_HOST --quiet  --eval 'db.getMongo().getDBNames().indexOf("catalogue")')
+INDEX=$(mongosh --host $MONGO_HOST --quiet  --eval 'db.getMongo().getDBNames().indexOf("catalogue")')
 
-if [ $INDEX -le 0 ]; then
-     mongosh --host $MONGODB_HOST </app/db/master-data.js
+if [ $INDEX <= 0 ]; then
+     mongosh --host $MONGO_HOST </app/db/master-data.js
     VALIDATE $? "Loading products"
 else
      echo -e "Products already loaded ... $Y SKIPPING $N"
