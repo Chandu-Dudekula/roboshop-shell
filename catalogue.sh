@@ -4,6 +4,7 @@ USERID=$(id -u)
 LOGS_FOLDER="/var/log/shell-roboshop"
 LOG_FILES="$LOGS_FOLDER/$0.log"
 MONGO_HOST="mongodb.techno90s.online"
+SCRIPT_DIR="$PWD"
 
 #-------------------- declaring color code variables-------------------------------#
 R="\e[31m"
@@ -39,7 +40,7 @@ VALIDATE $? "Install nodejs:20 module"
 
 id roboshop &>>$LOGS_FILE
 if [ $? -ne 0 ]; then
-  useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop tee -a $LOGS_FILE
+  useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>>$LOGS_FILE
   VALIDATE $? "Roboshop System user added"
 else
   echo -e "Roboshop user already exist ... $Y SKIPPING $N"
@@ -51,34 +52,34 @@ VALIDATE $? "/app directory is created"
 curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip &>>$LOGS_FILE
 VALIDATE $? "catalogue zip download"
 
-cd /app &>>$LOGS_FILE
+cd /app 
 VALIDATE $? "moving to app directory"
 
 rm -rf /app/*
 VALIDATE $? "Removing existing code"
 
-unzip /tmp/catalogue.zip | tee -a $LOGS_FILE
+unzip /tmp/catalogue.zip &>>$LOGS_FILE
 VALIDATE $? "unzip catalogue"
 
 npm install &>>$LOGS_FILE
 VALIDATE $? "Install dependencies"
 
-cp catalogue.service /etc/systemd/system/catalogue.service | tee -a $LOGS_FILE
+cp $SCRIPT_DIR/catalogue.service /etc/systemd/system/catalogue.service
 VALIDATE $? "copy catalogue service file"
 
 systemctl daemon-reload &>>$LOGS_FILE
 VALIDATE $? "deamon reload"
 
-systemctl enable catalogue | tee -a $LOGS_FILE
+systemctl enable catalogue &>>$LOGS_FILE
 VALIDATE $? "Enable catalogue"
 
-systemctl start catalogue | tee -a $LOGS_FILE
+systemctl start catalogue &>> $LOGS_FILE
 VALIDATE $? "Start catalogue"
 
-cp mongo.repo /etc/yum.repos.d/mongo.repo | tee -a $LOGS_FILE
+cp mongo.repo /etc/yum.repos.d/mongo.repo &>>$LOGS_FILE
 VALIDATE $? "copy the mongo repo dirctory"
 
-dnf install mongodb-mongosh -y | tee -a $LOGS_FILE
+dnf install mongodb-mongosh -y &>>$LOGS_FILE
 VALIDATE $? "install mongodb client"
 
 INDEX=$(mongosh --host $MONGODB_HOST --quiet  --eval 'db.getMongo().getDBNames().indexOf("catalogue")')
