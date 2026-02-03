@@ -2,7 +2,7 @@
 
 USERID=$(id -u)
 LOGS_FOLDER="/var/log/shell-roboshop"
-LOG_FILES="$LOGS_FOLDER/$0.log"
+LOGS_FILE="$LOGS_FOLDER/$0.log"
 MONGO_HOST="mongodb.techno90s.online"
 SCRIPT_DIR="$PWD"
 
