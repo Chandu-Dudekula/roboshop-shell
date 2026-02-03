@@ -28,16 +28,16 @@ VALIDATE(){
     fi
 }
 
-dnf module disable nodejs -y &>> $LOGS_FILE
+dnf module disable nodejs -y &>>$LOGS_FILE
 VALIDATE $? "disable nodejs module"
 
-dnf module enable nodejs:20 -y &>> $LOGS_FILE
+dnf module enable nodejs:20 -y &>>$LOGS_FILE
 VALIDATE $? "enable nodejs:20 module"
 
-dnf install nodejs -y &>> $LOGS_FILE
+dnf install nodejs -y &>>$LOGS_FILE
 VALIDATE $? "Install nodejs:20 module"
 
-id roboshop &>> $LOGS_FILE
+id roboshop &>>$LOGS_FILE
 if [ $? -ne 0 ]; then
   useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop tee -a $LOGS_FILE
   VALIDATE $? "Roboshop System user added"
@@ -48,10 +48,10 @@ fi
 mkdir -p /app
 VALIDATE $? "/app directory is created"
 
-curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip &>> $LOGS_FILE
+curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip &>>$LOGS_FILE
 VALIDATE $? "catalogue zip download"
 
-cd /app &>> $LOGS_FILE
+cd /app &>>$LOGS_FILE
 VALIDATE $? "moving to app directory"
 
 rm -rf /app/*
@@ -60,13 +60,13 @@ VALIDATE $? "Removing existing code"
 unzip /tmp/catalogue.zip | tee -a $LOGS_FILE
 VALIDATE $? "unzip catalogue"
 
-npm install &>> $LOGS_FILE
+npm install &>>$LOGS_FILE
 VALIDATE $? "Install dependencies"
 
 cp catalogue.service /etc/systemd/system/catalogue.service | tee -a $LOGS_FILE
 VALIDATE $? "copy catalogue service file"
 
-systemctl daemon-reload &>> $LOGS_FILE
+systemctl daemon-reload &>>$LOGS_FILE
 VALIDATE $? "deamon reload"
 
 systemctl enable catalogue | tee -a $LOGS_FILE
@@ -90,5 +90,5 @@ else
      echo -e "Products already loaded ... $Y SKIPPING $N"
 fi
 
-systemctl restart catalogue &>> $LOGS_FILE
+systemctl restart catalogue &>>$LOGS_FILE
 VALIDATE $? "Restarting catalogue"
